@@ -16,7 +16,23 @@ input = {
 ```
 
 ```php
-Json2Html::convert($input);
+$input = [
+ "name" => "json2html",
+ "description" => "Converts JSON to HTML tabular representation"
+]
+```
+
+```php
+$converter = new Json2Html($input);
+$converter->get()
+```
+
+```php
+(new Json2Html($input))->get()
+```
+
+```php
+Json2Html::make($input);
 ```
 
 output:
@@ -38,7 +54,20 @@ output:
 </table>
 ```
 
-<table><thead><tr><th>name</th><th>description</th></tr></thead><tbody><tr><td>json2html</td><td>converts JSON to HTML tabular representation</td></tr></tbody></table>
+<table>
+    <thead>
+        <tr>
+            <th>name</th>
+            <th>description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>json2html</td>
+            <td>converts JSON to HTML tabular representation</td>
+        </tr>
+    </tbody>
+</table>
 
 ###### Example 2: Setting custom attributes to table
 
@@ -52,19 +81,30 @@ input = {
 ```
 
 ```php
-Json2Html::id('info-table')
-    ->class('table table-bordered table-hover')
-    ->convert($input);
+$input = [
+ "name" => "json2html",
+ "description" => "Converts JSON to HTML tabular representation"
+]
+```
 
-Json2Html::id('info-table')
-    ->class(['table', 'table-bordered', 'table-hover'])
-    ->convert($input);
+```php
+Json2Html::make($input)
+    ->table([
+        'id' => 'info-table',
+        'class' => 'table table-bordered table-hover',
+        'border' => 1,
+    ])
 
-Json2Html::id('info-table')
-    ->class('table')
-    ->class('table-bordered')
-    ->class('table-hover')
-    ->convert($input);
+Json2Html::make($input)
+    ->tableId('info-table')
+    ->tableClass('table table-bordered table-hover')
+    ->tableBorder(1);
+
+Json2Html::make($input)
+    ->tableId('info-table')
+    ->tableClass('table')
+    ->tableClass('table-bordered')
+    ->tableClass('table-hover');
 ```
 
 output:
@@ -86,7 +126,20 @@ output:
 </table>
 ```
 
-<table id="info-table" class="table table-bordered table-hover"><thead><tr><th>name</th><th>description</th></tr></thead><tbody><tr><td>json2html</td><td>converts JSON to HTML tabular representation</td></tr></tbody></table>
+<table id="info-table" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>name</th>
+            <th>description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>json2html</td>
+            <td>converts JSON to HTML tabular representation</td>
+        </tr>
+    </tbody>
+</table>
 
 ###### Exemple 3:
 
@@ -100,15 +153,15 @@ input = {
 ```
 
 ```php
-Json2Html::header('Nome', 'Descrição')
-    ->convert($input);
+Json2Html::make($input)
+    ->title('Nome', 'Descrição');
 
-Json2Html::header(['Nome', 'Descrição'])
-    ->convert($input);
+Json2Html::make($input)
+    ->title(['Nome', 'Descrição']);
 
-Json2Html::header('Nome')
-    ->header('Descrição')
-    ->convert($input);
+Json2Html::make($input)
+    ->title('Nome')
+    ->title('Descrição');
 ```
 ```html
 <table>
@@ -140,13 +193,19 @@ input = {
 ```
 
 ```php
-Json2Html::header(['Linguagens', 'Banco de dados', ['Linguagem', 'Banco']])
-    ->convert($input);
+$input = [
+ "languages" => [["language": "PHP"], ["language": "JS"], ["language": "CSS"]],
+ "databases" => [["database": "Postgres"], ["database": "MySQL"], ["database": "SQLite"]]
+]
+```
 
+```php
+Json2Html::make($input)
+    ->title(['Linguagens', 'Banco de dados', ['Linguagem', 'Banco']]);
 
-Json2Html::header(['Linguagens', ['Linguagem']])
-    ->header(['Banco de dados', ['Banco']])
-    ->convert($input);
+Json2Html::make($input)
+    ->title(['Linguagens', ['Linguagem']])
+    ->title(['Banco de dados', ['Banco']]);
 ```
 ```html
 <table>
@@ -203,16 +262,26 @@ input:
 
 ```json
 input = {
-        "sample": [{
-                "a":1, "b":2, "c":3
-        }, {
-                "a":5, "b":6, "c":7
-        }]
+    "sample": [{
+        "a":1, "b":2, "c":3
+    }, {
+        "a":5, "b":6, "c":7
+    }]
 }
 ```
 
 ```php
-Json2Html::convert($input);
+$input = [
+    "sample": [[
+        "a":1, "b":2, "c":3
+    ], [
+        "a":5, "b":6, "c":7
+    ]]
+]
+```
+
+```php
+Json2Html::make($input);
 ```
 
 output:
