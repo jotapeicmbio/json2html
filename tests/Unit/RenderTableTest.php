@@ -29,4 +29,19 @@ class RenderTableTest extends TestCase
 
         $this->assertEquals($expected, $table);
     }
+
+    #[Test]
+    final public function passingAMultidimensionalOneLevelDatasetShouldReturnATableHTML()
+    {
+        $dataset = [
+            "Linguagens" => ["PHP", "JS", "CSS"],
+            "Banco de dados" => ["Postgres", "MySQL", "SQLite"]
+        ];
+
+        $expected = "<table><thead><tr><th>Linguagens</th><th>Banco de dados</th></tr></thead><tbody><tr><td>PHP</td><td>Postgres</td></tr><tr><td>JS</td><td>MySQL</td></tr><tr><td>CSS</td><td>SQLite</td></tr></tbody></table>";
+
+        $table = (new RenderTable($dataset))->render();
+
+        $this->assertEquals($expected, $table);
+    }
 }

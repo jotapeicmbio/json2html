@@ -11,6 +11,7 @@ class RenderTable
     protected DOMElement $table;
     protected array $datasetHeaders = [];
     protected array $datasetList = [];
+    protected string $position = 'vertical';
 
     public function __construct(?array $dataset = null)
     {
@@ -22,6 +23,11 @@ class RenderTable
         }
 
         $this->table = $this->dom->createElement('table');
+    }
+
+    protected function isMultidimensionalArray(array $array): bool
+    {
+        return count(array_filter($array, 'is_array')) > 0;
     }
 
     public function make(array $dataset): self
@@ -61,18 +67,42 @@ class RenderTable
             $this->table->appendChild($thead);
         }
 
-        if ($this->datasetList != []) {
-            $tbody = $this->dom->createElement('tbody');
-            $bodyRow = $this->dom->createElement('tr');
+        // var_dump($this->isMultidimensionalArray($this->datasetList));
+        // die();
 
-            foreach ($this->datasetList as $item) {
-                $td = $this->dom->createElement('td', $item);
-                $bodyRow->appendChild($td);
+        if ($this->isMultidimensionalArray($this->datasetList)) {
+            $this->datasetList = array_map(null, ...$this->datasetList);
+
+            if ($this->datasetList != []) {
+                $tbody = $this->dom->createElement('tbody');
+                $bodyRow = $this->dom->createElement('tr');
+
+                foreach ($this->datasetList as $items) {
+                    $bodyRow = $this->dom->createElement('tr');
+                    foreach ($items as $item) {
+                        $td = $this->dom->createElement('td', $item);
+                        $bodyRow->appendChild($td);
+                    }
+                    $tbody->appendChild($bodyRow);
+                }
+
+                $this->table->appendChild($tbody);
             }
-
-            $tbody->appendChild($bodyRow);
-            $this->table->appendChild($tbody);
+        } else {
+            if ($this->datasetList != []) {
+                $tbody = $this->dom->createElement('tbody');
+                $bodyRow = $this->dom->createElement('tr');
+    
+                foreach ($this->datasetList as $item) {
+                    $td = $this->dom->createElement('td', $item);
+                    $bodyRow->appendChild($td);
+                }
+    
+                $tbody->appendChild($bodyRow);
+                $this->table->appendChild($tbody);
+            }
         }
+
 
         $this->dom->appendChild($this->table);
         return $this->dom->saveHTML($this->table);
