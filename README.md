@@ -1,378 +1,385 @@
-# JSON2HTML
+# RenderTable
 
-JSON tree converter into an HTML table heavily inspired by the python **[json2html · PyPI](https://pypi.org/project/json2html)** library.
+Biblioteca PHP para conversão de dados JSON/Array para tabelas HTML com orientação configurável e sistema completo de atributos.
 
-## Examples
+## Recursos
 
-###### Example 1: Base usage
+- ✅ Conversão de arrays associativos e multidimensionais para HTML
+- ✅ **Orientação configurável**: Horizontal (tradicional) e Vertical  
+- ✅ **Sistema de atributos completo**: Classes, IDs, bordas e atributos customizados
+- ✅ **Controle de tabelas aninhadas**: Aplicação seletiva de atributos
+- ✅ **API Fluente**: Configuração através de method chaining
+- ✅ **Arquitetura Strategy Pattern**: Classes especializadas para cada tipo de renderização
 
-input:
+## Instalação
 
-```json
-input = {
- "name": "json2html",
- "description": "Converts JSON to HTML tabular representation"
-}
+```bash
+composer require icmbio/json2html
 ```
+
+## Uso Básico
+
+### Dados Simples
 
 ```php
-$input = [
- "name" => "json2html",
- "description" => "Converts JSON to HTML tabular representation"
-]
+<?php
+
+use Icmbio\Json2html\RenderTable;
+
+$data = [
+    "name" => "json2html", 
+    "description" => "Converts JSON to HTML"
+];
+
+$table = new RenderTable($data);
+echo $table->render();
 ```
 
-```php
-$converter = new RenderTable($input);
-$converter->render();
-```
-
-```php
-(new RenderTable($input))->render();
-```
-
-```php
-RenderTable::make($input);
-```
-
-output:
-
+**Saída HTML:**
 ```html
 <table>
     <thead>
-        <tr>
-            <th>name</th>
-            <th>description</th>
-        </tr>
+        <tr><th>name</th><th>description</th></tr>
     </thead>
     <tbody>
-        <tr>
-            <td>json2html</td>
-            <td>converts JSON to HTML tabular representation</td>
-        </tr>
+        <tr><td>json2html</td><td>Converts JSON to HTML</td></tr>
     </tbody>
 </table>
 ```
 
+### Arrays Multidimensionais 
+
+```php
+$data = [
+    "Monitor" => [
+        ["Nome" => "Luiz Loureiro"],
+        ["Nome" => "Michele Rocha Silva"]  
+    ]
+];
+
+$table = new RenderTable($data);
+echo $table->render();
+```
+
+**Saída HTML:**
+```html
 <table>
-    <thead>
-        <tr>
-            <th>name</th>
-            <th>description</th>
-        </tr>
-    </thead>
+    <thead><tr><th>Monitor</th></tr></thead>
     <tbody>
-        <tr>
-            <td>json2html</td>
-            <td>converts JSON to HTML tabular representation</td>
-        </tr>
+        <tr><td>
+            <table>
+                <thead><tr><th>Nome</th></tr></thead>
+                <tbody>
+                    <tr><td>Luiz Loureiro</td></tr>
+                    <tr><td>Michele Rocha Silva</td></tr>
+                </tbody>
+            </table>
+        </td></tr>
     </tbody>
 </table>
-
-###### Example 2: Setting custom attributes to table
-
-input:
-
-```json
-input = {
- "name": "json2html",
- "description": "Converts JSON to HTML tabular representation"
-}
 ```
 
+## Orientação da Tabela
+
+### Orientação Horizontal (Padrão)
+
+Headers ficam no topo, dados nas linhas:
+
 ```php
-$input = [
- "name" => "json2html",
- "description" => "Converts JSON to HTML tabular representation"
-]
+use Icmbio\Json2html\{RenderTable, TableOrientation};
+
+$data = [
+    "name" => "json2html",
+    "description" => "Converts JSON to HTML"  
+];
+
+$table = (new RenderTable($data))
+    ->config(['orientation' => TableOrientation::HORIZONTAL])
+    ->render();
 ```
 
+**Saída:**
+```html
+<table>
+    <thead><tr><th>name</th><th>description</th></tr></thead>
+    <tbody><tr><td>json2html</td><td>Converts JSON to HTML</td></tr></tbody>
+</table>
+```
+
+### Orientação Vertical
+
+Headers ficam na primeira coluna, dados nas colunas seguintes:
+
 ```php
-RenderTable::make($input)
-    ->tableClass('table table-bordered table-hover')
-    ->tableId('info-table')
-    ->tableBorder(1);
+$data = [
+    "name" => "json2html",
+    "description" => "Converts JSON to HTML"
+];
 
-RenderTable::make($input)
-    ->tableId('info-table')
-    ->tableClass('table table-bordered table-hover')
-    ->tableBorder(1);
+$table = (new RenderTable($data))
+    ->config(['orientation' => TableOrientation::VERTICAL])
+    ->render();
+```
 
-RenderTable::make($input)
-    ->tableId('info-table')
+**Saída:**
+```html
+<table>
+    <tbody>
+        <tr><td>name</td><td>json2html</td></tr>
+        <tr><td>description</td><td>Converts JSON to HTML</td></tr>
+    </tbody>
+</table>
+```
+
+## Sistema de Atributos
+
+### Classes CSS
+
+```php
+// Adicionar classe única
+$table = (new RenderTable($data))
+    ->tableClass('table table-bordered')
+    ->render();
+
+// Adicionar múltiplas classes via chaining
+$table = (new RenderTable($data))
     ->tableClass('table')
-    ->tableClass('table-bordered')
-    ->tableClass('table-hover');
+    ->tableClass('table-bordered') 
+    ->tableClass('table-hover')
+    ->render();
 ```
 
-output:
-
+**Saída:**
 ```html
-<table id="info-table" class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>name</th>
-            <th>description</th>
-        </tr>
-    </thead>
+<table class="table table-bordered table-hover">...</table>
+```
+
+### ID da Tabela
+
+```php
+$table = (new RenderTable($data))
+    ->tableId('info-table')
+    ->render();
+```
+
+**Saída:**
+```html
+<table id="info-table">...</table>
+```
+
+### Atributo Border
+
+```php
+$table = (new RenderTable($data))
+    ->tableBorder(1)
+    ->render();
+```
+
+**Saída:**
+```html
+<table border="1">...</table>
+```
+
+### Atributos Customizados
+
+```php
+$table = (new RenderTable($data))
+    ->tableAttribute('data-test', 'custom')
+    ->render();
+```
+
+**Saída:**
+```html
+<table data-test="custom">...</table>
+```
+
+### Combinação de Múltiplos Atributos
+
+```php
+$table = (new RenderTable($data))
+    ->tableId('info-table')
+    ->tableClass('table table-bordered')
+    ->tableBorder(1)
+    ->tableAttribute('data-test', 'combined')
+    ->render();
+```
+
+**Saída:**
+```html
+<table id="info-table" class="table table-bordered" border="1" data-test="combined">...</table>
+```
+
+## Controle de Tabelas Aninhadas
+
+Por padrão, as classes CSS são aplicadas em tabelas aninhadas, mas IDs não. Você pode controlar isso explicitamente:
+
+### Aplicar apenas na tabela raiz
+
+```php
+$data = [
+    "Monitor" => [
+        ["Nome" => "Luiz Loureiro"]
+    ]
+];
+
+$table = (new RenderTable($data))
+    ->tableClass('root-only', nested: false)  // Boolean explícito
+    ->render();
+```
+
+**Saída:**
+```html
+<table class="root-only">
+    <thead><tr><th>Monitor</th></tr></thead>
     <tbody>
-        <tr>
-            <td>json2html</td>
-            <td>converts JSON to HTML tabular representation</td>
-        </tr>
+        <tr><td>
+            <table>  <!-- Sem classe aplicada -->
+                <thead><tr><th>Nome</th></tr></thead>
+                <tbody><tr><td>Luiz Loureiro</td></tr></tbody>
+            </table>
+        </td></tr>
     </tbody>
 </table>
 ```
 
-<table id="info-table" class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>name</th>
-            <th>description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>json2html</td>
-            <td>converts JSON to HTML tabular representation</td>
-        </tr>
-    </tbody>
-</table>
-
-###### Example 2.1: Vertical orientation
+### Aplicar em todas as tabelas (padrão para classes)
 
 ```php
-$input = [
- "name" => "json2html",
- "description" => "Converts JSON to HTML tabular representation"
-]
+$table = (new RenderTable($data))
+    ->tableClass('table', nested: true)  // Explícito (padrão)
+    ->render();
 ```
 
+**Saída:**
+```html
+<table class="table">
+    <thead><tr><th>Monitor</th></tr></thead>
+    <tbody>
+        <tr><td>
+            <table class="table">  <!-- Classe aplicada também -->
+                <thead><tr><th>Nome</th></tr></thead>
+                <tbody><tr><td>Luiz Loureiro</td></tr></tbody>
+            </table>
+        </td></tr>
+    </tbody>
+</table>
+```
+
+### Comportamento Padrão por Tipo de Atributo
+
+- **Classes CSS**: `nested: true` (aplicam em tabelas aninhadas)
+- **IDs**: `nested: false` (aplicam apenas na tabela raiz)  
+- **Border**: `nested: true` (aplicam em tabelas aninhadas)
+- **Atributos customizados**: `nested: true` (aplicam em tabelas aninhadas)
+
 ```php
-use Icmbio\Json2html\TableOrientation;
+$table = (new RenderTable($data))
+    ->tableId('main-table')     // nested: false por padrão
+    ->tableClass('table')       // nested: true por padrão  
+    ->render();
+```
 
-// Vertical layout
-RenderTable::make($input)
-    ->config(['orientation' => TableOrientation::VERTICAL]);
+## Orientação com Atributos
 
-// Vertical with attributes
-RenderTable::make($input)
+A orientação vertical funciona normalmente com todos os atributos:
+
+```php
+$data = [
+    "name" => "json2html",
+    "description" => "Converts JSON to HTML"  
+];
+
+$table = (new RenderTable($data))
     ->config(['orientation' => TableOrientation::VERTICAL])
     ->tableClass('vertical-table')
-    ->tableId('info-table', nested: false);  // ID only on root table
-
-// Mixed orientations
-RenderTable::make($input)
-    ->config([
-        'orientation' => TableOrientation::VERTICAL,    // Root: vertical
-        'nested' => TableOrientation::HORIZONTAL        // Nested: horizontal  
-    ]);
+    ->render();
 ```
 
-output (vertical):
-
+**Saída:**
 ```html
-<table>
+<table class="vertical-table">
     <tbody>
-        <tr>
-            <td>name</td>
-            <td>json2html</td>
-        </tr>
-        <tr>
-            <td>description</td>
-            <td>Converts JSON to HTML tabular representation</td>
-        </tr>
+        <tr><td>name</td><td>json2html</td></tr>
+        <tr><td>description</td><td>Converts JSON to HTML</td></tr>
     </tbody>
 </table>
 ```
 
-<table>
-    <tbody>
-        <tr>
-            <td>name</td>
-            <td>json2html</td>
-        </tr>
-        <tr>
-            <td>description</td>
-            <td>Converts JSON to HTML tabular representation</td>
-        </tr>
-    </tbody>
-</table>
+## API Completa
 
-###### Exemple 3:
-
-input:
-
-```json
-input = {
- "name": "json2html",
- "description": "Converts JSON to HTML tabular representation"
-}
-```
+### RenderTable
 
 ```php
-RenderTable::make($input)
-    ->titles('Nome', 'Descrição');
+// Construtor
+new RenderTable(array $data)
 
-RenderTable::make($input)
-    ->titles(['Nome', 'Descrição']);
+// Configuração
+->config(array $options): self
 
-RenderTable::make($input)
-    ->titles('Nome')
-    ->titles('Descrição');
-```
-```html
-<table>
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Descrição</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>json2html</td>
-            <td>converts JSON to HTML tabular representation</td>
-        </tr>
-    </tbody>
-</table>
+// Atributos da tabela
+->tableClass(string $class, bool $nested = true): self
+->tableId(string $id, bool $nested = false): self  
+->tableBorder(int $border, bool $nested = true): self
+->tableAttribute(string $name, string $value, bool $nested = true): self
+
+// Renderização
+->render(): string
 ```
 
-
-###### Exemple 3:
-
-input:
-
-```json
-input = {
- "languages": [{"language": "PHP"}, {"language": "JS"}, {"language": "CSS"}],
- "databases": [{"database": "Postgres"}, {"database": "MySQL"}, {"database": "SQLite"}]
-}
-```
+### TableOrientation
 
 ```php
-$input = [
- "languages" => [["language": "PHP"], ["language": "JS"], ["language": "CSS"]],
- "databases" => [["database": "Postgres"], ["database": "MySQL"], ["database": "SQLite"]]
-]
+// Enum com casos disponíveis  
+TableOrientation::HORIZONTAL  // Padrão: headers no topo
+TableOrientation::VERTICAL    // Headers na primeira coluna
 ```
+
+## Exemplos Avançados
+
+### Array de Objetos com Orientação Mista
 
 ```php
-RenderTable::make($input)
-    ->titles(['Linguagens', 'Banco de dados']);
-```
-```html
-<table>
-    <thead>
-        <tr>
-            <th>Linguagens</th>
-            <th>Banco de dados</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Linguagem</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>PHP</td>
-                            <td>JS</td>
-                            <td>CSS</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-            <td>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Banco</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Postgres</td>
-                            <td>MySQL</td>
-                            <td>SQLite</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    </tbody>
-</table>
+$data = [
+    "departamentos" => [
+        ["nome" => "TI", "funcionarios" => 15],
+        ["nome" => "RH", "funcionarios" => 8]  
+    ]
+];
+
+$table = (new RenderTable($data))
+    ->config(['orientation' => TableOrientation::HORIZONTAL])
+    ->tableClass('table table-striped')
+    ->tableId('departamentos-table') 
+    ->tableBorder(1)
+    ->render();
 ```
 
-
-
-###### **Example 5:** Clubbing same keys of: Array of Objects
-
-input:
-
-```json
-input = {
-    "sample": [{
-        "a":1, "b":2, "c":3
-    }, {
-        "a":5, "b":6, "c":7
-    }]
-}
-```
+### Controle Granular de Atributos Aninhados
 
 ```php
-$input = [
-    "sample": [[
-        "a":1, "b":2, "c":3
-    ], [
-        "a":5, "b":6, "c":7
-    ]]
-]
+$data = [
+    "usuarios" => [
+        ["nome" => "João", "email" => "joao@teste.com"],
+        ["nome" => "Maria", "email" => "maria@teste.com"]
+    ]
+];
+
+$table = (new RenderTable($data))
+    ->tableId('usuarios-table', nested: false)          // ID só na raiz
+    ->tableClass('table', nested: true)                 // Classe em todas 
+    ->tableClass('table-bordered', nested: false)       // Classe só na raiz
+    ->tableBorder(1, nested: true)                      // Border em todas
+    ->tableAttribute('data-module', 'users', nested: false)  // Atributo só na raiz
+    ->render();
 ```
 
-```php
-Json2Html::make($input);
-```
+## Arquitetura
 
-output:
+O RenderTable usa o **Strategy Pattern** com classes especializadas:
 
-```html
-<table>
-    <thead>
-        <tr>
-            <th>sample</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>b</th>
-                            <th>c</th>
-                            <th>a</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2</td>
-                            <td>3</td>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>7</td>
-                            <td>5</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    </tbody>
-</table>
-```
+- `AbstractRenderer`: Lógica base e sistema de atributos
+- `HorizontalRenderer`: Layout tradicional (headers no topo)  
+- `VerticalRenderer`: Layout vertical (headers na primeira coluna)
+- `TableOrientation`: Enum para seleção type-safe da orientação
+
+Isso garante separação de responsabilidades e facilita extensibilidade para futuras orientações de tabela.
