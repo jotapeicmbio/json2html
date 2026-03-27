@@ -6,6 +6,7 @@ interface RenderTableInterface
 {
     public function make(array $dataset): self;
     public function titles(array $headers): self;
+    public function body(array $dataset): self;
     public function config(array $set): self;
     public function render(): string;
 }
