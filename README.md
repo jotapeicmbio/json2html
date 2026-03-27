@@ -1,6 +1,6 @@
-# Json2HTML
+# JSON2HTML
 
-Json tree converter into an HTML table heavily inspired by the python **[json2html · PyPI](https://pypi.org/project/json2html)** library.
+JSON tree converter into an HTML table heavily inspired by the python **[json2html · PyPI](https://pypi.org/project/json2html)** library.
 
 ## Examples
 
@@ -23,16 +23,16 @@ $input = [
 ```
 
 ```php
-$converter = new Json2Html($input);
-$converter->get()
+$converter = new RenderTable($input);
+$converter->render();
 ```
 
 ```php
-(new Json2Html($input))->get()
+(new RenderTable($input))->render();
 ```
 
 ```php
-Json2Html::make($input);
+RenderTable::make($input);
 ```
 
 output:
@@ -88,19 +88,17 @@ $input = [
 ```
 
 ```php
-Json2Html::make($input)
-    ->table([
-        'id' => 'info-table',
-        'class' => 'table table-bordered table-hover',
-        'border' => 1,
-    ])
+RenderTable::make($input)
+    ->tableClass('table table-bordered table-hover')
+    ->tableId('info-table')
+    ->tableBorder(1);
 
-Json2Html::make($input)
+RenderTable::make($input)
     ->tableId('info-table')
     ->tableClass('table table-bordered table-hover')
     ->tableBorder(1);
 
-Json2Html::make($input)
+RenderTable::make($input)
     ->tableId('info-table')
     ->tableClass('table')
     ->tableClass('table-bordered')
@@ -141,6 +139,66 @@ output:
     </tbody>
 </table>
 
+###### Example 2.1: Vertical orientation
+
+```php
+$input = [
+ "name" => "json2html",
+ "description" => "Converts JSON to HTML tabular representation"
+]
+```
+
+```php
+use Icmbio\Json2html\TableOrientation;
+
+// Vertical layout
+RenderTable::make($input)
+    ->config(['orientation' => TableOrientation::VERTICAL]);
+
+// Vertical with attributes
+RenderTable::make($input)
+    ->config(['orientation' => TableOrientation::VERTICAL])
+    ->tableClass('vertical-table')
+    ->tableId('info-table', nested: false);  // ID only on root table
+
+// Mixed orientations
+RenderTable::make($input)
+    ->config([
+        'orientation' => TableOrientation::VERTICAL,    // Root: vertical
+        'nested' => TableOrientation::HORIZONTAL        // Nested: horizontal  
+    ]);
+```
+
+output (vertical):
+
+```html
+<table>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>json2html</td>
+        </tr>
+        <tr>
+            <td>description</td>
+            <td>Converts JSON to HTML tabular representation</td>
+        </tr>
+    </tbody>
+</table>
+```
+
+<table>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>json2html</td>
+        </tr>
+        <tr>
+            <td>description</td>
+            <td>Converts JSON to HTML tabular representation</td>
+        </tr>
+    </tbody>
+</table>
+
 ###### Exemple 3:
 
 input:
@@ -153,15 +211,15 @@ input = {
 ```
 
 ```php
-Json2Html::make($input)
-    ->title('Nome', 'Descrição');
+RenderTable::make($input)
+    ->titles('Nome', 'Descrição');
 
-Json2Html::make($input)
-    ->title(['Nome', 'Descrição']);
+RenderTable::make($input)
+    ->titles(['Nome', 'Descrição']);
 
-Json2Html::make($input)
-    ->title('Nome')
-    ->title('Descrição');
+RenderTable::make($input)
+    ->titles('Nome')
+    ->titles('Descrição');
 ```
 ```html
 <table>
@@ -200,12 +258,8 @@ $input = [
 ```
 
 ```php
-Json2Html::make($input)
-    ->title(['Linguagens', 'Banco de dados', ['Linguagem', 'Banco']]);
-
-Json2Html::make($input)
-    ->title(['Linguagens', ['Linguagem']])
-    ->title(['Banco de dados', ['Banco']]);
+RenderTable::make($input)
+    ->titles(['Linguagens', 'Banco de dados']);
 ```
 ```html
 <table>
