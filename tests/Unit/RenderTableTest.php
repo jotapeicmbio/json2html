@@ -44,4 +44,131 @@ class RenderTableTest extends TestCase
 
         $this->assertEquals($expected, $table);
     }
+
+    #[Test]
+    final public function passingAMultidimensionalTwoLevelDatasetShouldReturnATableHTML()
+    {
+        $dataset = [
+            "Ambiente" => "Mata Atlântica",
+            "Monitor" => [
+                ["Nome" => "Luiz Loureiro "],
+                ["Nome" => "Michele Rocha Silva "]
+            ],
+            "Unidade Amostral" => "3981",
+            "Existem plantas dentro do critério de inclusão?" => "Sim",
+            "Planta" => [
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ],
+                [
+                    "Tipo da Planta" => "",
+                    "Teve coleta botânica?" => "Não",
+                    "Como você mapeará a planta?" => "x, y",
+                ]
+            ]
+        ];
+
+        $expected = "<table><thead><tr><th>Ambiente</th><th>Monitor</th><th>Unidade Amostral</th><th>Existem plantas dentro do critério de inclusão?</th><th>Planta</th></tr></thead><tbody><tr><td>Mata Atlântica</td><td><table><thead><tr><th>Nome</th></tr></thead><tbody><tr><td>Luiz Loureiro </td></tr><tr><td>Michele Rocha Silva </td></tr></tbody></table></td><td>3981</td><td>Sim</td><td><table><thead><tr><th>Tipo da Planta</th><th>Teve coleta botânica?</th><th>Como você mapeará a planta?</th></tr></thead><tbody><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr><tr><td></td><td>Não</td><td>x, y</td></tr></tbody></table></td></tr></tbody></table>";
+
+        $table = (new RenderTable($dataset))->render();
+
+        $this->assertEquals($expected, $table);
+    }
 }
