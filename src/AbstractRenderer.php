@@ -8,11 +8,13 @@ abstract class AbstractRenderer
 {
     protected DOMDocument $dom;
     protected array $config;
+    protected array $attributes;
 
-    public function __construct(DOMDocument $dom, array $config = [])
+    public function __construct(DOMDocument $dom, array $config = [], array $attributes = [])
     {
         $this->dom = $dom;
         $this->config = $config;
+        $this->attributes = $attributes;
     }
 
     abstract public function render(array $headers, array $data): \DOMElement;
@@ -56,9 +58,30 @@ abstract class AbstractRenderer
     {
         $nestedOrientation = $this->getNestedOrientation();
         
+        // Para nested renderers, os atributos 'nested' se tornam 'root'
+        $nestedAttributes = [
+            'root' => $this->attributes['nested'] ?? [],
+            'nested' => $this->attributes['nested'] ?? []
+        ];
+        
         return match ($nestedOrientation) {
-            TableOrientation::HORIZONTAL => new HorizontalRenderer($this->dom, $this->config),
-            TableOrientation::VERTICAL => new VerticalRenderer($this->dom, $this->config),
+            TableOrientation::HORIZONTAL => new HorizontalRenderer($this->dom, $this->config, $nestedAttributes),
+            TableOrientation::VERTICAL => new VerticalRenderer($this->dom, $this->config, $nestedAttributes),
         };
+    }
+
+    protected function applyAttributes(\DOMElement $table, bool $isNested = false): void
+    {
+        $attributeSet = $isNested ? $this->attributes['nested'] ?? [] : $this->attributes['root'] ?? [];
+        
+        foreach ($attributeSet as $name => $value) {
+            if ($name === 'class' && is_array($value)) {
+                if (!empty($value)) {
+                    $table->setAttribute('class', implode(' ', $value));
+                }
+            } elseif (!empty($value) && $value !== null) {
+                $table->setAttribute($name, (string)$value);
+            }
+        }
     }
 }

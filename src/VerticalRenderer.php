@@ -104,6 +104,9 @@ class VerticalRenderer extends AbstractRenderer
             $table->appendChild($tbody);
         }
 
+        // Apply attributes to the table
+        $this->applyAttributes($table);
+
         return $table;
     }
 

@@ -5,13 +5,17 @@ namespace Icmbio\Json2html;
 use DOMDocument;
 use DOMElement;
 
-class RenderTable
+class RenderTable implements RenderTableInterface
 {
     protected DOMDocument $dom;
     protected DOMElement $table;
     protected array $datasetHeaders = [];
     protected array $datasetList = [];
     protected array $config = [];
+    protected array $attributes = [
+        'root' => [],
+        'nested' => []
+    ];
     protected AbstractRenderer $renderer;
 
     public function __construct(?array $dataset = null)
@@ -39,8 +43,8 @@ class RenderTable
         $orientation = $this->config['orientation'] ?? TableOrientation::HORIZONTAL;
         
         $this->renderer = match ($orientation) {
-            TableOrientation::HORIZONTAL => new HorizontalRenderer($this->dom, $this->config),
-            TableOrientation::VERTICAL => new VerticalRenderer($this->dom, $this->config),
+            TableOrientation::HORIZONTAL => new HorizontalRenderer($this->dom, $this->config, $this->attributes),
+            TableOrientation::VERTICAL => new VerticalRenderer($this->dom, $this->config, $this->attributes),
         };
     }
 
@@ -64,6 +68,46 @@ class RenderTable
     public function config(array $set): self
     {
         $this->config = array_merge($this->config, $set);
+        $this->updateRenderer();
+        return $this;
+    }
+
+    public function tableClass(string $class, bool $nested = true): self
+    {
+        $this->attributes['root']['class'][] = $class;
+        if ($nested) {
+            $this->attributes['nested']['class'][] = $class;
+        }
+        $this->updateRenderer();
+        return $this;
+    }
+
+    public function tableId(string $id, bool $nested = false): self
+    {
+        $this->attributes['root']['id'] = $id;
+        if ($nested) {
+            $this->attributes['nested']['id'] = $id;
+        }
+        $this->updateRenderer();
+        return $this;
+    }
+
+    public function tableBorder(int $border, bool $nested = true): self
+    {
+        $this->attributes['root']['border'] = $border;
+        if ($nested) {
+            $this->attributes['nested']['border'] = $border;
+        }
+        $this->updateRenderer();
+        return $this;
+    }
+
+    public function tableAttribute(string $name, string $value, bool $nested = true): self
+    {
+        $this->attributes['root'][$name] = $value;
+        if ($nested) {
+            $this->attributes['nested'][$name] = $value;
+        }
         $this->updateRenderer();
         return $this;
     }
