@@ -103,4 +103,31 @@ class VerticalOrientationTest extends TestCase
 
         $this->assertEquals($expected, $table);
     }
+
+    #[Test]
+    final public function nestedArraysInsideArrayOfObjectsShouldRenderVertically()
+    {
+        $dataset = [
+            'Items' => [
+                [
+                    'Name' => 'Item A',
+                    'Details' => [
+                        ['Label' => 'Height', 'Value' => '10m'],
+                    ],
+                ],
+            ],
+        ];
+
+        $table = (new RenderTable($dataset))
+            ->config([
+                'orientation' => TableOrientation::VERTICAL,
+                'nested' => TableOrientation::VERTICAL,
+            ])
+            ->render();
+
+        $this->assertStringContainsString('Items', $table);
+        $this->assertStringContainsString('Details', $table);
+        $this->assertStringContainsString('Height', $table);
+        $this->assertStringContainsString('10m', $table);
+    }
 }

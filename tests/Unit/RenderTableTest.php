@@ -171,4 +171,32 @@ class RenderTableTest extends TestCase
 
         $this->assertEquals($expected, $table);
     }
+
+    #[Test]
+    final public function nestedArraysInsideArrayOfObjectsShouldRenderHorizontally()
+    {
+        $dataset = [
+            'People' => [
+                [
+                    'Name' => 'Ana',
+                    'Phones' => [
+                        ['Type' => 'Work', 'Number' => '1111-1111'],
+                    ],
+                    'Dimensions' => [
+                        'Height' => '80cm',
+                        'Width' => '120cm',
+                    ],
+                ],
+            ],
+        ];
+
+        $table = (new RenderTable($dataset))->render();
+
+        $this->assertStringContainsString('People', $table);
+        $this->assertStringContainsString('Phones', $table);
+        $this->assertStringContainsString('Work', $table);
+        $this->assertStringContainsString('1111-1111', $table);
+        $this->assertStringContainsString('Height', $table);
+        $this->assertStringContainsString('80cm', $table);
+    }
 }
