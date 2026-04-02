@@ -49,7 +49,8 @@ class VerticalRenderer extends AbstractRenderer
                                 $row->appendChild($headerTd);
                                 
                                 // Second column: data
-                                $dataTd = $this->dom->createElement('td', (string)($objectData[$header] ?? ''));
+                                $dataTd = $this->dom->createElement('td');
+                                $this->appendValueToCell($dataTd, $objectData[$header] ?? '');
                                 $row->appendChild($dataTd);
                                 
                                 $tbody->appendChild($row);
@@ -65,22 +66,13 @@ class VerticalRenderer extends AbstractRenderer
                             $headerTd->textContent = (string)$header;
                             $row->appendChild($headerTd);
                             
-                            // Second column: data
-                            $dataTd = $this->dom->createElement('td');
-                            $item = $data[$index] ?? null;
-                            
-                            if (is_array($item)) {
-                                // Create nested table with configured orientation
-                                $nestedTable = $this->createNestedTable($item);
-                                $dataTd->appendChild($nestedTable);
-                            } else {
-                                // Simple text content for non-array data
-                                $dataTd->textContent = (string)$item;
-                            }
-                            
-                            $row->appendChild($dataTd);
-                            $tbody->appendChild($row);
-                        }
+                    // Second column: data
+                    $dataTd = $this->dom->createElement('td');
+                    $this->appendValueToCell($dataTd, $data[$index] ?? null);
+                    
+                    $row->appendChild($dataTd);
+                    $tbody->appendChild($row);
+                }
                     }
                 }
             } else {
@@ -108,35 +100,5 @@ class VerticalRenderer extends AbstractRenderer
         $this->applyAttributes($table);
 
         return $table;
-    }
-
-    private function isArrayOfObjectsForTable(array $data): bool
-    {
-        // Check if we have an array where each element is an associative array with the same keys
-        if (empty($data)) {
-            return false;
-        }
-        
-        foreach ($data as $item) {
-            if (!is_array($item) || is_numeric(key($item))) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-
-    private function createNestedTable(array $data): DOMElement
-    {
-        // Handle array of associative arrays (like the test case)
-        if ($this->isArrayOfObjectsForTable($data)) {
-            $headers = array_keys($data[0]);
-            $nestedRenderer = $this->createNestedRenderer();
-            return $nestedRenderer->render($headers, $data);
-        }
-        
-        // Handle other types of arrays (fallback)
-        $nestedRenderer = $this->createNestedRenderer();
-        return $nestedRenderer->render([], $data);
     }
 }

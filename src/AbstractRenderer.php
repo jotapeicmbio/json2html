@@ -3,6 +3,7 @@
 namespace Icmbio\Json2html;
 
 use DOMDocument;
+use DOMElement;
 
 abstract class AbstractRenderer
 {
@@ -83,5 +84,55 @@ abstract class AbstractRenderer
                 $table->setAttribute($name, (string)$value);
             }
         }
+    }
+
+    protected function appendValueToCell(DOMElement $cell, mixed $value): void
+    {
+        if (is_array($value)) {
+            $cell->appendChild($this->createNestedTable($value));
+            return;
+        }
+
+        $cell->textContent = (string)$value;
+    }
+
+    protected function createNestedTable(array $data): DOMElement
+    {
+        $nestedRenderer = $this->createNestedRenderer();
+
+        if ($this->isAssociativeArray($data)) {
+            return $nestedRenderer->render(array_keys($data), array_values($data));
+        }
+
+        if ($this->isArrayOfObjectsForTable($data)) {
+            $headers = array_keys($data[0]);
+            return $nestedRenderer->render($headers, $data);
+        }
+
+        return $nestedRenderer->render([], $data);
+    }
+
+    protected function isArrayOfObjectsForTable(array $data): bool
+    {
+        if (empty($data)) {
+            return false;
+        }
+
+        foreach ($data as $item) {
+            if (!is_array($item) || $this->isAssociativeArray($item) === false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function isAssociativeArray(array $data): bool
+    {
+        if ($data === []) {
+            return false;
+        }
+
+        return array_keys($data) !== range(0, count($data) - 1);
     }
 }

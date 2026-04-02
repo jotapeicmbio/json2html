@@ -49,7 +49,8 @@ class HorizontalRenderer extends AbstractRenderer
                             $bodyRow = $this->dom->createElement('tr');
                             foreach ($headers as $header) {
                                 $value = $row[$header] ?? '';
-                                $td = $this->dom->createElement('td', (string)$value);
+                                $td = $this->dom->createElement('td');
+                                $this->appendValueToCell($td, $value);
                                 $bodyRow->appendChild($td);
                             }
                             $tbody->appendChild($bodyRow);
@@ -60,16 +61,7 @@ class HorizontalRenderer extends AbstractRenderer
 
                         foreach ($data as $item) {
                             $td = $this->dom->createElement('td');
-                            
-                            if (is_array($item)) {
-                                // Create nested table with configured orientation
-                                $nestedTable = $this->createNestedTable($item);
-                                $td->appendChild($nestedTable);
-                            } else {
-                                // Simple text content for non-array data
-                                $td->textContent = (string)$item;
-                            }
-                            
+                            $this->appendValueToCell($td, $item);
                             $bodyRow->appendChild($td);
                         }
 
@@ -95,47 +87,5 @@ class HorizontalRenderer extends AbstractRenderer
         $this->applyAttributes($table);
 
         return $table;
-    }
-
-    private function createNestedTable(array $data): DOMElement
-    {
-        // Handle array of associative arrays (like the test case)
-        if ($this->isArrayOfObjects($data)) {
-            $headers = array_keys($data[0]);
-            $nestedRenderer = $this->createNestedRenderer();
-            return $nestedRenderer->render($headers, $data);
-        }
-        
-        // Handle other types of arrays (fallback)
-        $nestedRenderer = $this->createNestedRenderer();
-        return $nestedRenderer->render([], $data);
-    }
-
-    private function isArrayOfObjectsForTable(array $data): bool
-    {
-        // Check if we have an array where each element is an associative array with the same keys
-        if (empty($data)) {
-            return false;
-        }
-        
-        foreach ($data as $item) {
-            if (!is_array($item) || is_numeric(key($item))) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-
-    private function isArrayOfObjects(array $data): bool
-    {
-        // Check if we have a non-empty array where the first element is an associative array
-        if (empty($data) || !is_array($data[0] ?? null)) {
-            return false;
-        }
-        
-        // Check if the first element has non-numeric keys (associative array)
-        $firstElement = $data[0];
-        return !empty($firstElement) && !is_numeric(key($firstElement));
     }
 }
