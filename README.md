@@ -383,3 +383,44 @@ O RenderTable usa o **Strategy Pattern** com classes especializadas:
 - `TableOrientation`: Enum para seleção type-safe da orientação
 
 Isso garante separação de responsabilidades e facilita extensibilidade para futuras orientações de tabela.
+
+## 📚 Documentação Adicional
+
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Documentação técnica detalhada da arquitetura
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guia completo para contribuidores
+- **[.copilot-instructions.md](.copilot-instructions.md)** - Instruções específicas para agentes de IA
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Por favor, leia o [Guia de Contribuição](CONTRIBUTING.md) para:
+
+- Configuração do ambiente de desenvolvimento
+- Padrões de código e testes
+- Processo de Pull Request
+- Resolução de problemas comuns
+
+### Desenvolvimento Rápido
+```bash
+# Setup inicial
+docker-compose up -d
+./composer install
+
+# Executar testes
+./test
+
+# Desenvolvimento com Docker
+./php         # Executar comandos PHP
+./composer    # Executar comandos Composer
+```
+
+## 📋 Roadmap
+
+- [ ] Suporte a templates customizáveis
+- [ ] Exportação para diferentes formatos (CSV, PDF)
+- [ ] Otimizações de performance para datasets grandes
+- [ ] Integração com frameworks populares (Laravel, Symfony)
+- [ ] Suporte a elementos HTML5 semânticos
+
+---
+
+**Desenvolvido pelo ICMBio** 🌱 | **Licença MIT** | **Contribuições bem-vindas!**
