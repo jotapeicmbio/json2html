@@ -81,6 +81,8 @@ echo $table->render();
 
 ## Orientação da Tabela
 
+Além da configuração manual com `RenderTable`, a biblioteca também oferece classes prontas para presets de renderização, como `TableHorizontal`, `TableVertical` e `TableVerticalSeparate`.
+
 ### Orientação Horizontal (Padrão)
 
 Headers ficam no topo, dados nas linhas:
@@ -130,6 +132,18 @@ $table = (new RenderTable($data))
     </tbody>
 </table>
 ```
+
+### Presets Prontos
+
+Quando a regra de renderização já é conhecida, você pode usar classes opinativas:
+
+```php
+use Icmbio\Json2html\TableVerticalSeparate;
+
+$table = TableVerticalSeparate::make($data)->render();
+```
+
+Esse preset gera tabelas verticais e interpreta arrays aninhados estruturais sem achatar listas de arrays em uma única subtabela.
 
 ## Sistema de Atributos
 

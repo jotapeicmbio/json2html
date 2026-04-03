@@ -17,6 +17,7 @@ class RenderTable implements RenderTableInterface
         'nested' => []
     ];
     protected AbstractRenderer $renderer;
+    protected NestedArrayRenderStrategyInterface $nestedArrayStrategy;
 
     public function __construct(?array $dataset = null)
     {
@@ -34,6 +35,7 @@ class RenderTable implements RenderTableInterface
             'orientation' => TableOrientation::HORIZONTAL,
             'nested' => TableOrientation::HORIZONTAL
         ];
+        $this->nestedArrayStrategy = new AggregatedNestedArrayStrategy();
         
         $this->updateRenderer();
     }
@@ -43,14 +45,20 @@ class RenderTable implements RenderTableInterface
         $orientation = $this->config['orientation'] ?? TableOrientation::HORIZONTAL;
         
         $this->renderer = match ($orientation) {
-            TableOrientation::HORIZONTAL => new HorizontalRenderer($this->dom, $this->config, $this->attributes),
-            TableOrientation::VERTICAL => new VerticalRenderer($this->dom, $this->config, $this->attributes),
+            TableOrientation::HORIZONTAL => new HorizontalRenderer($this->dom, $this->config, $this->attributes, $this->nestedArrayStrategy),
+            TableOrientation::VERTICAL => new VerticalRenderer($this->dom, $this->config, $this->attributes, $this->nestedArrayStrategy),
         };
     }
 
-    public function make(array $dataset): self
+    public static function make(array $dataset): static
     {
-        return $this;
+        $instance = new static($dataset);
+        $instance->boot();
+        return $instance;
+    }
+
+    protected function boot(): void
+    {
     }
 
     public function titles(array $headers): self
@@ -68,6 +76,13 @@ class RenderTable implements RenderTableInterface
     public function config(array $set): self
     {
         $this->config = array_merge($this->config, $set);
+        $this->updateRenderer();
+        return $this;
+    }
+
+    public function nestedArrayStrategy(NestedArrayRenderStrategyInterface $strategy): self
+    {
+        $this->nestedArrayStrategy = $strategy;
         $this->updateRenderer();
         return $this;
     }
@@ -119,4 +134,3 @@ class RenderTable implements RenderTableInterface
         return $this->dom->saveHTML($table);
     }
 }
-

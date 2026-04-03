@@ -3,19 +3,28 @@
 namespace Icmbio\Json2html;
 
 use DOMDocument;
+use DOMDocumentFragment;
 use DOMElement;
+use DOMNode;
 
 abstract class AbstractRenderer
 {
     protected DOMDocument $dom;
     protected array $config;
     protected array $attributes;
+    protected NestedArrayRenderStrategyInterface $nestedArrayStrategy;
 
-    public function __construct(DOMDocument $dom, array $config = [], array $attributes = [])
+    public function __construct(
+        DOMDocument $dom,
+        array $config = [],
+        array $attributes = [],
+        ?NestedArrayRenderStrategyInterface $nestedArrayStrategy = null
+    )
     {
         $this->dom = $dom;
         $this->config = $config;
         $this->attributes = $attributes;
+        $this->nestedArrayStrategy = $nestedArrayStrategy ?? new AggregatedNestedArrayStrategy();
     }
 
     abstract public function render(array $headers, array $data): \DOMElement;
@@ -66,8 +75,8 @@ abstract class AbstractRenderer
         ];
         
         return match ($nestedOrientation) {
-            TableOrientation::HORIZONTAL => new HorizontalRenderer($this->dom, $this->config, $nestedAttributes),
-            TableOrientation::VERTICAL => new VerticalRenderer($this->dom, $this->config, $nestedAttributes),
+            TableOrientation::HORIZONTAL => new HorizontalRenderer($this->dom, $this->config, $nestedAttributes, $this->nestedArrayStrategy),
+            TableOrientation::VERTICAL => new VerticalRenderer($this->dom, $this->config, $nestedAttributes, $this->nestedArrayStrategy),
         };
     }
 
@@ -89,14 +98,19 @@ abstract class AbstractRenderer
     protected function appendValueToCell(DOMElement $cell, mixed $value): void
     {
         if (is_array($value)) {
-            $cell->appendChild($this->createNestedTable($value));
+            $cell->appendChild($this->createNestedContent($value));
             return;
         }
 
         $cell->textContent = (string)$value;
     }
 
-    protected function createNestedTable(array $data): DOMElement
+    protected function createNestedContent(array $data): DOMNode
+    {
+        return $this->nestedArrayStrategy->render($this, $data);
+    }
+
+    public function renderNestedArrayAsSingleTable(array $data): DOMElement
     {
         $nestedRenderer = $this->createNestedRenderer();
 
@@ -110,6 +124,21 @@ abstract class AbstractRenderer
         }
 
         return $nestedRenderer->render([], $data);
+    }
+
+    public function createFragment(): DOMDocumentFragment
+    {
+        return $this->dom->createDocumentFragment();
+    }
+
+    public function isAssociativeData(array $data): bool
+    {
+        return $this->isAssociativeArray($data);
+    }
+
+    public function containsNestedArrays(array $data): bool
+    {
+        return $this->isMultidimensionalArray($data);
     }
 
     protected function isArrayOfObjectsForTable(array $data): bool
